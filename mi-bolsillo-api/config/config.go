@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	DatabaseUrl        string
+	DatabaseToken      string
 	Port               string
 	EmailProviderUrl   string
 	EmailProviderToken string
@@ -18,6 +19,7 @@ func LoadConfig() *Config {
 
 	return &Config{
 		DatabaseUrl:        os.Getenv("DATABASE_URL"),
+		DatabaseToken:      os.Getenv("DATABASE_TOKEN"),
 		Port:               os.Getenv("PORT"),
 		EmailProviderUrl:   os.Getenv("EMAIL_PROVIDER_URL"),
 		EmailProviderToken: os.Getenv("EMAIL_PROVIDER_TOKEN"),
