@@ -52,3 +52,9 @@ func (r *ExpenseRepositoryImpl) FindByBillID(billID string) ([]*entities.Expense
 	}
 	return expenses, nil
 }
+
+func (r *ExpenseRepositoryImpl) DeleteByBillID(billID string) error {
+	query := `DELETE FROM expenses WHERE bill_id = ?`
+	_, err := r.db.Exec(query, billID)
+	return err
+}

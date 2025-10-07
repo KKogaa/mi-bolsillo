@@ -12,6 +12,7 @@ type Config struct {
 	Port               string
 	EmailProviderUrl   string
 	EmailProviderToken string
+	ClerkJWKSUrl       string
 }
 
 func LoadConfig() *Config {
@@ -23,5 +24,6 @@ func LoadConfig() *Config {
 		Port:               os.Getenv("PORT"),
 		EmailProviderUrl:   os.Getenv("EMAIL_PROVIDER_URL"),
 		EmailProviderToken: os.Getenv("EMAIL_PROVIDER_TOKEN"),
+		ClerkJWKSUrl:       os.Getenv("CLERK_JWKS_URL"),
 	}
 }

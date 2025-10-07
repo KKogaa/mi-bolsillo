@@ -73,12 +73,12 @@ export const BillDetail = () => {
             <Link to="/" className="text-blue-600 hover:text-blue-500 text-sm mb-2 inline-block">
               ← Back to bills
             </Link>
-            <h2 className="text-2xl font-bold text-gray-900">{bill.name}</h2>
-            {bill.description && (
-              <p className="text-gray-600 mt-1">{bill.description}</p>
+            <h2 className="text-2xl font-bold text-gray-900">{bill.description}</h2>
+            {bill.category && (
+              <p className="text-gray-600 mt-1">{bill.category}</p>
             )}
             <p className="text-sm text-gray-500 mt-2">
-              Created {new Date(bill.createdAt).toLocaleDateString()}
+              {new Date(bill.date).toLocaleDateString()} • {bill.currency}
             </p>
           </div>
           <button
@@ -94,19 +94,22 @@ export const BillDetail = () => {
             <h3 className="text-lg font-medium text-gray-900">Expenses</h3>
           </div>
           <ul className="divide-y divide-gray-200">
-            {bill.expenses.map((expense, index) => (
+            {bill.expenses?.map((expense, index) => (
               <li key={expense.id || index} className="px-6 py-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="font-medium text-gray-900">{expense.name}</p>
+                    <p className="font-medium text-gray-900">{expense.description}</p>
                     {expense.category && (
                       <p className="text-sm text-gray-600 mt-1">
                         {expense.category}
                       </p>
                     )}
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(expense.date).toLocaleDateString()}
+                    </p>
                   </div>
                   <span className="font-semibold text-gray-900">
-                    ${expense.amount.toFixed(2)}
+                    {bill.currency === 'PEN' ? 'S/' : '$'}{expense.amount.toFixed(2)}
                   </span>
                 </div>
               </li>
@@ -116,7 +119,7 @@ export const BillDetail = () => {
             <div className="flex justify-between items-center">
               <span className="text-lg font-medium text-gray-900">Total</span>
               <span className="text-2xl font-bold text-gray-900">
-                ${bill.totalAmount.toFixed(2)}
+                {bill.currency === 'PEN' ? 'S/' : '$'}{bill.expenses?.reduce((sum, exp) => sum + exp.amount, 0).toFixed(2) || '0.00'}
               </span>
             </div>
           </div>

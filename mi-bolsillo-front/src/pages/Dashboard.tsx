@@ -8,10 +8,15 @@ export const Dashboard = () => {
   const [bills, setBills] = useState<Bill[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [expandedBillId, setExpandedBillId] = useState<string | null>(null);
 
   useEffect(() => {
     loadBills();
   }, []);
+
+  const toggleExpand = (billId: string) => {
+    setExpandedBillId(expandedBillId === billId ? null : billId);
+  };
 
   const loadBills = async () => {
     try {
@@ -26,13 +31,9 @@ export const Dashboard = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this bill?')) {
-      return;
-    }
-
     try {
       await billService.delete(id);
-      setBills(bills.filter((bill) => bill.id !== id));
+      await loadBills();
     } catch (err) {
       setError('Failed to delete bill');
     }
@@ -75,47 +76,94 @@ export const Dashboard = () => {
           <div className="bg-white shadow overflow-hidden sm:rounded-md">
             <ul className="divide-y divide-gray-200">
               {bills.map((bill) => (
-                <li key={bill.id}>
-                  <div className="px-4 py-4 sm:px-6 hover:bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <Link
-                        to={`/bills/${bill.id}`}
-                        className="flex-1"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-lg font-medium text-gray-900">
-                              {bill.name}
-                            </p>
-                            {bill.description && (
-                              <p className="text-sm text-gray-600 mt-1">
-                                {bill.description}
+                <li key={bill.billId}>
+                  <div>
+                    <div
+                      className="px-4 py-4 sm:px-6 hover:bg-gray-50 cursor-pointer"
+                      onClick={() => toggleExpand(bill.billId)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <p className="text-lg font-medium text-gray-900">
+                                  {bill.description || 'Untitled Bill'}
+                                </p>
+                                <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded font-medium">
+                                  {bill.currency}
+                                </span>
+                              </div>
+                              {bill.category && (
+                                <p className="text-sm text-gray-600 mt-1">
+                                  {bill.category}
+                                </p>
+                              )}
+                              <p className="text-sm text-gray-500 mt-1">
+                                {new Date(bill.date).toLocaleDateString()}
+                                {bill.expenses && bill.expenses.length > 0 && (
+                                  <span className="ml-2">
+                                    • {bill.expenses.length} expense{bill.expenses.length !== 1 ? 's' : ''}
+                                  </span>
+                                )}
                               </p>
-                            )}
-                            <p className="text-sm text-gray-500 mt-1">
-                              {bill.expenses.length} expense{bill.expenses.length !== 1 ? 's' : ''}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-lg font-semibold text-gray-900">
-                              ${bill.totalAmount.toFixed(2)}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {new Date(bill.createdAt).toLocaleDateString()}
-                            </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xl font-semibold text-gray-900">
+                                {bill.currency === 'PEN' ? 'S/' : '$'} {(bill.currency === 'PEN' ? bill.amountPen : bill.amountUsd).toFixed(2)}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </Link>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleDelete(bill.id);
-                        }}
-                        className="ml-4 text-red-600 hover:text-red-800 text-sm"
-                      >
-                        Delete
-                      </button>
+                        <div className="ml-4 flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(bill.billId);
+                            }}
+                            className="text-red-600 hover:text-red-800 text-sm px-2"
+                          >
+                            Delete
+                          </button>
+                          <span className="text-gray-400">
+                            {expandedBillId === bill.billId ? '▼' : '▶'}
+                          </span>
+                        </div>
+                      </div>
                     </div>
+
+                    {expandedBillId === bill.billId && bill.expenses && bill.expenses.length > 0 && (
+                      <div className="px-4 py-3 sm:px-6 bg-gray-50 border-t border-gray-200">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">Expenses</h4>
+                        <ul className="space-y-2">
+                          {bill.expenses.map((expense) => (
+                            <li
+                              key={expense.expenseId}
+                              className="flex items-center justify-between bg-white px-3 py-2 rounded-md"
+                            >
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-gray-900">
+                                  {expense.description}
+                                </p>
+                                {expense.category && (
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    {expense.category}
+                                  </p>
+                                )}
+                                <p className="text-xs text-gray-400 mt-1">
+                                  {new Date(expense.date).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-semibold text-gray-900">
+                                  {bill.currency === 'PEN' ? 'S/' : '$'} {(bill.currency === 'PEN' ? expense.amountPen : expense.amountUsd).toFixed(2)}
+                                </p>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </li>
               ))}

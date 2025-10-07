@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { UserButton, useUser } from '@clerk/clerk-react';
 
 interface MainLayoutProps {
   children: ReactNode;
 }
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
-  const { user, logout } = useAuth();
+  const { user } = useUser();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -18,14 +18,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
-                {user?.name}
+                {user?.firstName || user?.emailAddresses[0]?.emailAddress}
               </span>
-              <button
-                onClick={logout}
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
-              >
-                Sign out
-              </button>
+              <UserButton afterSignOutUrl="/login" />
             </div>
           </div>
         </div>

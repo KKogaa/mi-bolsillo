@@ -20,25 +20,48 @@ export interface SignUpCredentials {
   password: string;
 }
 
-export interface Expense {
-  id?: string;
-  name: string;
+export interface CreateExpenseForBill {
   amount: number;
-  category?: string;
+  description: string;
+  category: string;
+  date: string;
+}
+
+export interface Expense {
+  expenseId: string;
+  amountPen: number;
+  amountUsd: number;
+  exchangeRate: number;
+  currency: 'PEN' | 'USD';
+  description: string;
+  category: string;
+  date: string;
+  billId: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Bill {
-  id: string;
-  name: string;
-  description?: string;
-  totalAmount: number;
-  expenses: Expense[];
+  billId: string;
+  amountPen: number;
+  amountUsd: number;
+  description: string;
+  category: string;
+  currency: 'PEN' | 'USD';
+  userId: string;
+  date: string;
+  expenses?: Expense[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateBillRequest {
-  name: string;
-  description?: string;
-  expenses: Expense[];
+  description: string;
+  category: string;
+  userId: string;
+  date: string;
+  currency: 'PEN' | 'USD';
+  exchangeRate: number;
+  expenses: CreateExpenseForBill[];
 }

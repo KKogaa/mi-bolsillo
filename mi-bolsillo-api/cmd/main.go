@@ -8,6 +8,7 @@ import (
 
 	"github.com/KKogaa/mi-bolsillo-api/config"
 	"github.com/KKogaa/mi-bolsillo-api/internal/adapters/inbound/handlers"
+	custommiddleware "github.com/KKogaa/mi-bolsillo-api/internal/adapters/inbound/middleware"
 	"github.com/KKogaa/mi-bolsillo-api/internal/adapters/outbound/repositories"
 	"github.com/KKogaa/mi-bolsillo-api/internal/core/services"
 	"github.com/jmoiron/sqlx"
@@ -39,6 +40,7 @@ func runMigrations(db *sqlx.DB) error {
 			amount_usd REAL NOT NULL,
 			description TEXT,
 			category TEXT,
+			currency TEXT NOT NULL,
 			user_id TEXT NOT NULL,
 			date DATETIME NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -100,9 +102,17 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
+
+	// Protected routes group with Clerk authentication
+	api := e.Group("")
+	api.Use(custommiddleware.ClerkAuthWithConfig(cfg.ClerkJWKSUrl))
 
 	// Register routes
-	e.POST("/bills", billWithExpensesHandler.CreateBillWithExpenses)
+	api.POST("/bills", billWithExpensesHandler.CreateBillWithExpenses)
+	api.GET("/bills", billWithExpensesHandler.ListBills)
+	api.GET("/bills/:id", billWithExpensesHandler.GetBillByID)
+	api.DELETE("/bills/:id", billWithExpensesHandler.DeleteBillByID)
 
 	if err := e.Start(":8080"); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal("failed to start server", "error", err)

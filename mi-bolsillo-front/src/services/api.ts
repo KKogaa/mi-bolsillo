@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AuthResponse, LoginCredentials, SignUpCredentials, Bill, CreateBillRequest } from '../types';
+import type { Bill, CreateBillRequest } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
@@ -7,63 +7,36 @@ const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
   },
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
+// Token will be set by the setAuthToken function from Clerk
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+    // Only redirect to login if we get a 401 and we're not already on login/signup pages
+    if (error.response?.status === 401 &&
+        !window.location.pathname.includes('/login') &&
+        !window.location.pathname.includes('/signup')) {
       window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
 
-export const authService = {
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const { data } = await api.post<AuthResponse>('/auth/login', credentials);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    return data;
-  },
-
-  signup: async (credentials: SignUpCredentials): Promise<AuthResponse> => {
-    const { data } = await api.post<AuthResponse>('/auth/signup', credentials);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    return data;
-  },
-
-  logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  },
-
-  getCurrentUser: () => {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
-  },
-
-  isAuthenticated: () => {
-    return !!localStorage.getItem('token');
-  },
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+  }
 };
 
 export const billService = {
   getAll: async (): Promise<Bill[]> => {
     const { data } = await api.get<Bill[]>('/bills');
-    return data;
+    return data || [];
   },
 
   getById: async (id: string): Promise<Bill> => {
