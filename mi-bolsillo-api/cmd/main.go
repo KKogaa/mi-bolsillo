@@ -14,8 +14,30 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
+
+	_ "github.com/KKogaa/mi-bolsillo-api/docs" // Import generated docs
 )
+
+// @title Mi Bolsillo API
+// @version 1.0
+// @description API for managing bills and expenses with multi-currency support
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.email support@mibolsillo.com
+
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and the JWT token from Clerk authentication
 
 func connectToDatabase(cfg *config.Config) (*sqlx.DB, error) {
 	dbUrl := fmt.Sprintf("%s?authToken=%s", cfg.DatabaseUrl, cfg.DatabaseToken)
@@ -103,6 +125,9 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
+
+	// Swagger documentation route (public)
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// Protected routes group with Clerk authentication
 	api := e.Group("")

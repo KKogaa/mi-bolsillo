@@ -1,0 +1,329 @@
+basePath: /
+definitions:
+  dtos.BillWithExpensesResponse:
+    properties:
+      amountPen:
+        example: 95.75
+        type: number
+      amountUsd:
+        example: 25.5
+        type: number
+      billId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      category:
+        example: Food
+        type: string
+      createdAt:
+        example: "2025-10-10T10:00:00Z"
+        type: string
+      currency:
+        example: USD
+        type: string
+      date:
+        example: "2025-10-10T10:00:00Z"
+        type: string
+      description:
+        example: Grocery shopping
+        type: string
+      expenses:
+        items:
+          $ref: '#/definitions/entities.Expense'
+        type: array
+      updatedAt:
+        example: "2025-10-10T10:00:00Z"
+        type: string
+      userId:
+        example: user_123456789
+        type: string
+    type: object
+  dtos.CreateBillWithExpensesRequest:
+    properties:
+      category:
+        example: Food
+        type: string
+      currency:
+        example: USD
+        type: string
+      date:
+        example: "2025-10-10T10:00:00Z"
+        type: string
+      description:
+        example: Grocery shopping
+        type: string
+      exchangeRate:
+        example: 3.75
+        type: number
+      expenses:
+        items:
+          $ref: '#/definitions/internal_adapters_inbound_handlers_dtos.CreateExpenseForBill'
+        type: array
+    type: object
+  entities.Expense:
+    properties:
+      amountPen:
+        example: 95.75
+        type: number
+      amountUsd:
+        example: 25.5
+        type: number
+      billId:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      category:
+        example: Fruits
+        type: string
+      createdAt:
+        example: "2025-10-10T10:00:00Z"
+        type: string
+      currency:
+        example: USD
+        type: string
+      date:
+        example: "2025-10-10"
+        type: string
+      description:
+        example: Apples
+        type: string
+      exchangeRate:
+        example: 3.75
+        type: number
+      expenseId:
+        example: 123e4567-e89b-12d3-a456-426614174001
+        type: string
+      updatedAt:
+        example: "2025-10-10T10:00:00Z"
+        type: string
+      userId:
+        example: user_123456789
+        type: string
+    type: object
+  internal_adapters_inbound_handlers_dtos.CreateExpenseForBill:
+    properties:
+      amount:
+        example: 25.5
+        type: number
+      category:
+        example: Fruits
+        type: string
+      date:
+        example: "2025-10-10"
+        type: string
+      description:
+        example: Apples
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@mibolsillo.com
+    name: API Support
+  description: API for managing bills and expenses with multi-currency support
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Mi Bolsillo API
+  version: "1.0"
+paths:
+  /bills:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all bills with their associated expenses for the authenticated
+        user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of bills with expenses
+          schema:
+            items:
+              $ref: '#/definitions/dtos.BillWithExpensesResponse'
+            type: array
+        "401":
+          description: User ID not found in context
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to retrieve bills
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: List all bills for the authenticated user
+      tags:
+      - bills
+    post:
+      consumes:
+      - application/json
+      description: Creates a new bill with associated expenses for the authenticated
+        user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bill and expenses data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateBillWithExpensesRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: bill and expenses created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request body
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: User ID not found in context
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to create bill with expenses
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new bill with expenses
+      tags:
+      - bills
+  /bills/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a bill and its associated expenses by ID for the authenticated
+        user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bill ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bill and associated expenses deleted successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bill ID is required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: User ID not found in context
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Access denied to this bill
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to delete bill
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a bill by ID
+      tags:
+      - bills
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a bill with its associated expenses by ID for the authenticated
+        user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bill ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bill with expenses
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bill ID is required
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: User ID not found in context
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Access denied to this bill
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to retrieve bill
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get a specific bill by ID
+      tags:
+      - bills
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and the JWT token from Clerk authentication
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
