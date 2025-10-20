@@ -113,6 +113,73 @@ definitions:
         example: Apples
         type: string
     type: object
+  telegram.Chat:
+    properties:
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      username:
+        type: string
+    type: object
+  telegram.Message:
+    properties:
+      chat:
+        $ref: '#/definitions/telegram.Chat'
+      date:
+        type: integer
+      from:
+        $ref: '#/definitions/telegram.User'
+      message_id:
+        type: integer
+      photo:
+        items:
+          $ref: '#/definitions/telegram.Photo'
+        type: array
+      text:
+        type: string
+    type: object
+  telegram.Photo:
+    properties:
+      file_id:
+        type: string
+      file_size:
+        type: integer
+      file_unique_id:
+        type: string
+      height:
+        type: integer
+      width:
+        type: integer
+    type: object
+  telegram.Update:
+    properties:
+      message:
+        $ref: '#/definitions/telegram.Message'
+      update_id:
+        type: integer
+    type: object
+  telegram.User:
+    properties:
+      first_name:
+        type: string
+      id:
+        type: integer
+      is_bot:
+        type: boolean
+      language_code:
+        type: string
+      last_name:
+        type: string
+      username:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -320,6 +387,90 @@ paths:
       summary: Get a specific bill by ID
       tags:
       - bills
+  /bills/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Uploads a photo of a bill, parses it using Grok API, and creates
+        a bill with expenses
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Bill photo (JPEG, PNG, or other image format)
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: bill and expenses created successfully from image
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request or image
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: User ID not found in context
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to process image or create bill
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Upload a bill photo and parse it
+      tags:
+      - bills
+  /telegram/webhook:
+    post:
+      consumes:
+      - application/json
+      description: Receives and processes updates from Telegram bot
+      parameters:
+      - description: Telegram update
+        in: body
+        name: update
+        required: true
+        schema:
+          $ref: '#/definitions/telegram.Update'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Handle Telegram webhook
+      tags:
+      - telegram
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and the JWT token from Clerk authentication

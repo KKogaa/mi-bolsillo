@@ -9,6 +9,7 @@ import (
 	"github.com/KKogaa/mi-bolsillo-api/config"
 	"github.com/KKogaa/mi-bolsillo-api/internal/adapters/inbound/handlers"
 	custommiddleware "github.com/KKogaa/mi-bolsillo-api/internal/adapters/inbound/middleware"
+	"github.com/KKogaa/mi-bolsillo-api/internal/adapters/outbound/grok"
 	"github.com/KKogaa/mi-bolsillo-api/internal/adapters/outbound/repositories"
 	"github.com/KKogaa/mi-bolsillo-api/internal/core/services"
 	"github.com/jmoiron/sqlx"
@@ -118,8 +119,12 @@ func main() {
 	// Initialize services
 	billWithExpensesService := services.NewBillWithExpensesService(billRepo, expenseRepo)
 
+	// Initialize Grok client
+	grokClient := grok.NewGrokClient(cfg.GrokAPIKey)
+
 	// Initialize handlers
 	billWithExpensesHandler := handlers.NewBillWithExpensesHandler(billWithExpensesService)
+	billUploadHandler := handlers.NewBillUploadHandler(grokClient, billWithExpensesService)
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -135,6 +140,7 @@ func main() {
 
 	// Register routes
 	api.POST("/bills", billWithExpensesHandler.CreateBillWithExpenses)
+	api.POST("/bills/upload", billUploadHandler.UploadBillPhoto)
 	api.GET("/bills", billWithExpensesHandler.ListBills)
 	api.GET("/bills/:id", billWithExpensesHandler.GetBillByID)
 	api.DELETE("/bills/:id", billWithExpensesHandler.DeleteBillByID)

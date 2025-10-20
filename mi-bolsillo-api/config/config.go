@@ -13,6 +13,8 @@ type Config struct {
 	EmailProviderUrl   string
 	EmailProviderToken string
 	ClerkJWKSUrl       string
+	GrokAPIKey         string
+	TelegramBotToken   string
 }
 
 func LoadConfig() *Config {
@@ -25,5 +27,7 @@ func LoadConfig() *Config {
 		EmailProviderUrl:   os.Getenv("EMAIL_PROVIDER_URL"),
 		EmailProviderToken: os.Getenv("EMAIL_PROVIDER_TOKEN"),
 		ClerkJWKSUrl:       os.Getenv("CLERK_JWKS_URL"),
+		GrokAPIKey:         os.Getenv("GROK_API_KEY"),
+		TelegramBotToken:   os.Getenv("TELEGRAM_BOT_TOKEN"),
 	}
 }

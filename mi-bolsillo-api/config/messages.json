@@ -1,0 +1,19 @@
+{
+  "welcome": "Welcome to Mi Bolsillo! 👋\n\nI can help you manage your bills and expenses. Here's what I can do:\n\n📋 *List Bills*: \"Show my bills\" or \"List my recent expenses\"\n📊 *Summary*: \"How much did I spend last month?\" or \"Summary of this month\"\n📸 *Upload Bill*: Just send me a photo of your bill/receipt\n\nTry asking me something!",
+  "processing_image": "📸 Processing your bill image...",
+  "bill_saved": "✅ *Bill saved successfully!*\n\n🏪 Merchant: %s\n💰 Total: %s %.2f\n📅 Date: %s\n📝 Items: %d\n\nYou can view all your bills by asking \"show my bills\"",
+  "no_bills": "📋 You don't have any bills yet. Send me a photo of a receipt to get started!",
+  "no_bills_summary": "📊 You don't have any bills yet. Send me a photo of a receipt to get started!",
+  "no_bills_for_period": "📊 No bills found for period: %s",
+  "bills_list_header": "📋 *Your Recent Bills* (showing %d of %d)\n\n",
+  "summary_header": "📊 *Expense Summary - %s*\n\n",
+  "unknown_intent": "I'm not sure what you're asking for. Here's what I can help with:\n\n📋 *List Bills*: \"Show my bills\" or \"List my recent expenses\"\n📊 *Summary*: \"How much did I spend last month?\"\n📸 *Upload Bill*: Send me a photo of your receipt",
+  "error_understand": "❌ Sorry, I couldn't understand your request. Please try again.",
+  "error_retrieve_image": "❌ Sorry, I couldn't retrieve your image. Please try again.",
+  "error_download_image": "❌ Sorry, I couldn't download your image. Please try again.",
+  "error_read_image": "❌ Sorry, I couldn't read your image. Please try again.",
+  "error_parse_bill": "❌ Sorry, I couldn't parse your bill. Please make sure the image is clear and try again.",
+  "error_save_bill": "❌ Sorry, I couldn't save your bill. Please try again.",
+  "error_retrieve_bills": "❌ Sorry, I couldn't retrieve your bills. Please try again.",
+  "error_processing_message": "❌ Sorry, I couldn't send you a processing message. Please try again."
+}

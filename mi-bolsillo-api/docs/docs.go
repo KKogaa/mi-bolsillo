@@ -153,6 +153,78 @@ const docTemplate = `{
                 }
             }
         },
+        "/bills/upload": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Uploads a photo of a bill, parses it using Grok API, and creates a bill with expenses",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bills"
+                ],
+                "summary": "Upload a bill photo and parse it",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Bill photo (JPEG, PNG, or other image format)",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "bill and expenses created successfully from image",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request or image",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User ID not found in context",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to process image or create bill",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/bills/{id}": {
             "get": {
                 "security": [
@@ -305,6 +377,61 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to delete bill",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/telegram/webhook": {
+            "post": {
+                "description": "Receives and processes updates from Telegram bot",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "telegram"
+                ],
+                "summary": "Handle Telegram webhook",
+                "parameters": [
+                    {
+                        "description": "Telegram update",
+                        "name": "update",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/telegram.Update"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -470,6 +597,109 @@ const docTemplate = `{
                 "description": {
                     "type": "string",
                     "example": "Apples"
+                }
+            }
+        },
+        "telegram.Chat": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "telegram.Message": {
+            "type": "object",
+            "properties": {
+                "chat": {
+                    "$ref": "#/definitions/telegram.Chat"
+                },
+                "date": {
+                    "type": "integer"
+                },
+                "from": {
+                    "$ref": "#/definitions/telegram.User"
+                },
+                "message_id": {
+                    "type": "integer"
+                },
+                "photo": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/telegram.Photo"
+                    }
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "telegram.Photo": {
+            "type": "object",
+            "properties": {
+                "file_id": {
+                    "type": "string"
+                },
+                "file_size": {
+                    "type": "integer"
+                },
+                "file_unique_id": {
+                    "type": "string"
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "width": {
+                    "type": "integer"
+                }
+            }
+        },
+        "telegram.Update": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "$ref": "#/definitions/telegram.Message"
+                },
+                "update_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "telegram.User": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_bot": {
+                    "type": "boolean"
+                },
+                "language_code": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         }
