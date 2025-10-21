@@ -9,6 +9,7 @@ jobs:
   build-and-push-echo:
     name: Build and Push Echo Server Image
     runs-on: ubuntu-latest
+    environment: PROD_ENV
 
     steps:
       - name: Checkout code
@@ -46,6 +47,7 @@ jobs:
   build-and-push-telegram:
     name: Build and Push Telegram Bot Image
     runs-on: ubuntu-latest
+    environment: PROD_ENV
 
     steps:
       - name: Checkout code
@@ -83,6 +85,7 @@ jobs:
   build-and-push-front:
     name: Build and Push Frontend Image
     runs-on: ubuntu-latest
+    environment: PROD_ENV
 
     steps:
       - name: Checkout code
