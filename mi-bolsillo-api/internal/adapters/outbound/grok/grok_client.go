@@ -52,9 +52,9 @@ type grokMessage struct {
 }
 
 type grokContent struct {
-	Type     string          `json:"type"`
-	Text     string          `json:"text,omitempty"`
-	ImageURL *grokImageURL   `json:"image_url,omitempty"`
+	Type     string        `json:"type"`
+	Text     string        `json:"text,omitempty"`
+	ImageURL *grokImageURL `json:"image_url,omitempty"`
 }
 
 type grokImageURL struct {
@@ -81,7 +81,7 @@ func (c *GrokClient) ParseBillImage(imageData []byte) (*ParsedBillData, error) {
 
 	// Create the request payload
 	reqBody := grokRequest{
-		Model:  "grok-2-vision-1212",
+		Model:  "grok-4-fast-non-reasoning",
 		Stream: false,
 		Messages: []grokMessage{
 			{
@@ -191,27 +191,38 @@ type grokTextMessage struct {
 // DetectIntent analyzes user text and determines their intent
 // Implements the ports.IntentDetector interface
 func (c *GrokClient) DetectIntent(userText string) (*entities.Intent, error) {
-	systemPrompt := `You are an intent classifier for a bill/expense management application.
-Analyze the user's message and determine their intent. Return ONLY a valid JSON object with this structure:
+	systemPrompt := `Eres un clasificador de intención para una aplicación de gestión de gastos y facturas.
+Analiza el mensaje del usuario y determina su intención. Devuelve SOLO un objeto JSON válido con esta estructura:
 {
-  "type": "list_bills|summary_bills|upload_bill|unknown",
+  "type": "list_bills|summary_bills|upload_bill|create_expense|unknown",
   "confidence": 0.0-1.0,
   "parameters": {
-    "period": "last_month|this_month|last_week|all_time" (for summary_bills),
-    "limit": number (for list_bills, how many bills to show)
+    "period": "last_month|this_month|last_week|all_time" (para summary_bills),
+    "limit": número (para list_bills, cuántas facturas mostrar),
+    "amount": número (para create_expense, el monto gastado),
+    "description": "texto" (para create_expense, descripción del gasto),
+    "category": "Food|Transportation|Entertainment|Shopping|Utilities|Healthcare|Other" (para create_expense),
+    "merchant": "texto" (para create_expense, nombre del lugar opcional)
   }
 }
 
-Intent types:
-- list_bills: User wants to see a list of recent bills (e.g., "show my bills", "list my last bills", "what are my recent expenses")
-- summary_bills: User wants a summary/total of bills for a period (e.g., "how much did I spend last month", "summary of this month", "total expenses")
-- upload_bill: User wants to upload/add a bill (this is detected when they send an image, not text)
-- unknown: Cannot determine intent or asking something else
+Tipos de intención:
+- list_bills: El usuario quiere ver una lista de facturas recientes (ej: "muéstrame mis facturas", "lista mis últimas facturas", "cuáles son mis gastos recientes")
+- summary_bills: El usuario quiere un resumen/total de facturas por un período (ej: "cuánto gasté el mes pasado", "resumen de este mes", "gastos totales")
+- upload_bill: El usuario quiere subir/agregar una factura (esto se detecta cuando envían una imagen, no texto)
+- create_expense: El usuario quiere registrar un gasto individual (ej: "gasté 100 soles en wong", "pagué 50 soles de taxi", "compré 25 soles de comida"). Extrae el monto, descripción/comerciante y categoriza apropiadamente.
+- unknown: No se puede determinar la intención o está preguntando otra cosa
 
-Return ONLY valid JSON, no additional text.`
+Reglas para create_expense:
+- Extrae el monto numérico del mensaje
+- Identifica el comerciante o descripción del gasto
+- Categoriza según el contexto: Food (comida, restaurante, supermercado), Transportation (taxi, bus, transporte), Shopping (compras), Entertainment (entretenimiento), Utilities (servicios), Healthcare (salud), Other (otro)
+- Detecta patrones como "gasté X en Y", "pagué X de Y", "compré X en Y"
+
+Devuelve SOLO JSON válido, sin texto adicional.`
 
 	reqBody := grokTextRequest{
-		Model:  "grok-2-1212",
+		Model:  "grok-4-fast-non-reasoning",
 		Stream: false,
 		Messages: []grokTextMessage{
 			{

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/KKogaa/mi-bolsillo-api/internal/adapters/outbound/grok"
 	handlerdtos "github.com/KKogaa/mi-bolsillo-api/internal/adapters/inbound/handlers/dtos"
 	"github.com/KKogaa/mi-bolsillo-api/internal/adapters/inbound/handlers/mappers"
+	"github.com/KKogaa/mi-bolsillo-api/internal/adapters/outbound/grok"
 	"github.com/KKogaa/mi-bolsillo-api/internal/core/services"
 	"github.com/labstack/echo/v4"
 )

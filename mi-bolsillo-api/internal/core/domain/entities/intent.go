@@ -9,8 +9,9 @@ type Intent struct {
 
 // Intent type constants - domain vocabulary
 const (
-	IntentListBills    = "list_bills"
-	IntentSummaryBills = "summary_bills"
-	IntentUploadBill   = "upload_bill"
-	IntentUnknown      = "unknown"
+	IntentListBills     = "list_bills"
+	IntentSummaryBills  = "summary_bills"
+	IntentUploadBill    = "upload_bill"
+	IntentCreateExpense = "create_expense"
+	IntentUnknown       = "unknown"
 )

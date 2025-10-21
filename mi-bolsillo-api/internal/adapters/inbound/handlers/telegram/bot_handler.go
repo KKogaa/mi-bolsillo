@@ -82,6 +82,8 @@ func (h *BotHandler) HandleText(c tele.Context) error {
 		return h.handleListBills(c, appUserID, intent)
 	case entities.IntentSummaryBills:
 		return h.handleSummaryBills(c, appUserID, intent)
+	case entities.IntentCreateExpense:
+		return h.handleCreateExpense(c, appUserID, intent)
 	case entities.IntentUnknown:
 		fallthrough
 	default:
@@ -147,13 +149,20 @@ func (h *BotHandler) HandlePhoto(c tele.Context) error {
 	}
 
 	// Create bill with expenses
+	// Set exchange rate based on currency
+	exchangeRate := 3.75 // Default PEN to USD exchange rate
+	if parsedData.Currency == "USD" {
+		exchangeRate = 3.75 // USD to PEN
+	}
+
 	handlerDTO := handlerdtos.CreateBillWithExpensesRequest{
-		UserID:      appUserID,
-		Description: parsedData.MerchantName,
-		Category:    "General",
-		Currency:    parsedData.Currency,
-		Date:        billDate,
-		Expenses:    make([]handlerdtos.CreateExpenseForBill, len(parsedData.Items)),
+		UserID:       appUserID,
+		Description:  parsedData.MerchantName,
+		Category:     "General",
+		Currency:     parsedData.Currency,
+		ExchangeRate: exchangeRate,
+		Date:         billDate,
+		Expenses:     make([]handlerdtos.CreateExpenseForBill, len(parsedData.Items)),
 	}
 
 	for i, item := range parsedData.Items {
@@ -318,14 +327,73 @@ func filterBillsByPeriod(bills []*servicedtos.BillWithExpensesResponse, period s
 func getPeriodName(period string) string {
 	switch period {
 	case "last_month":
-		return "Last Month"
+		return "Mes Pasado"
 	case "this_month":
-		return "This Month"
+		return "Este Mes"
 	case "last_week":
-		return "Last Week"
+		return "Última Semana"
 	case "all_time":
-		return "All Time"
+		return "Todo el Tiempo"
 	default:
-		return "All Time"
+		return "Todo el Tiempo"
 	}
+}
+
+func (h *BotHandler) handleCreateExpense(c tele.Context, userID string, intent *entities.Intent) error {
+	// Extract parameters from intent
+	amount, ok := intent.Parameters["amount"].(float64)
+	if !ok || amount <= 0 {
+		return c.Send(h.messages.ErrorMissingAmount)
+	}
+
+	// Get description from merchant or description parameter
+	description := "Gasto"
+	if merchant, ok := intent.Parameters["merchant"].(string); ok && merchant != "" {
+		description = merchant
+	} else if desc, ok := intent.Parameters["description"].(string); ok && desc != "" {
+		description = desc
+	}
+
+	// Get category, default to "Other"
+	category := "Other"
+	if cat, ok := intent.Parameters["category"].(string); ok && cat != "" {
+		category = cat
+	}
+
+	// Create bill with single expense
+	now := time.Now()
+	handlerDTO := handlerdtos.CreateBillWithExpensesRequest{
+		UserID:       userID,
+		Description:  description,
+		Category:     category,
+		Currency:     "PEN", // Default to PEN for Peru
+		ExchangeRate: 3.75,  // Default PEN to USD exchange rate
+		Date:         now,
+		Expenses: []handlerdtos.CreateExpenseForBill{
+			{
+				Description: description,
+				Amount:      amount,
+				Category:    category,
+				Date:        now.Format("2006-01-02"),
+			},
+		},
+	}
+
+	serviceDTO := mappers.ToCreateBillWithExpensesServiceDTO(handlerDTO)
+	bill, _, err := h.billWithExpensesService.CreateBillWithExpenses(serviceDTO)
+	if err != nil {
+		log.Printf("Failed to create expense: %v", err)
+		return c.Send(h.messages.ErrorSaveExpense)
+	}
+
+	// Send success message
+	responseMsg := fmt.Sprintf(h.messages.ExpenseSaved,
+		amount,
+		description,
+		category,
+		now.Format("2006-01-02"),
+	)
+
+	log.Printf("Expense created successfully: %s", bill.BillId)
+	return c.Send(responseMsg, &tele.SendOptions{ParseMode: tele.ModeMarkdown})
 }

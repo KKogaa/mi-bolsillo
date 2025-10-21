@@ -96,7 +96,7 @@ func (s *BillWithExpensesService) CreateBillWithExpenses(dto dtos.CreateBillWith
 	return bill, expenses, nil
 }
 
-//TODO: move this to another service that only lists the bills
+// TODO: move this to another service that only lists the bills
 func (s *BillWithExpensesService) ListBillsByUserID(userID string) ([]*dtos.BillWithExpensesResponse, error) {
 	// Get all bills for the user
 	bills, err := s.billRepo.FindByUserID(userID)

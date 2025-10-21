@@ -27,17 +27,17 @@ func NewTelegramClient(botToken string) *TelegramClient {
 
 // Telegram API types
 type Update struct {
-	UpdateID int     `json:"update_id"`
+	UpdateID int      `json:"update_id"`
 	Message  *Message `json:"message,omitempty"`
 }
 
 type Message struct {
-	MessageID int      `json:"message_id"`
-	From      *User    `json:"from,omitempty"`
-	Chat      *Chat    `json:"chat"`
-	Date      int64    `json:"date"`
-	Text      string   `json:"text,omitempty"`
-	Photo     []Photo  `json:"photo,omitempty"`
+	MessageID int     `json:"message_id"`
+	From      *User   `json:"from,omitempty"`
+	Chat      *Chat   `json:"chat"`
+	Date      int64   `json:"date"`
+	Text      string  `json:"text,omitempty"`
+	Photo     []Photo `json:"photo,omitempty"`
 }
 
 type User struct {
@@ -73,8 +73,8 @@ type SendMessageRequest struct {
 }
 
 type FileResponse struct {
-	OK     bool   `json:"ok"`
-	Result *File  `json:"result"`
+	OK     bool  `json:"ok"`
+	Result *File `json:"result"`
 }
 
 type File struct {

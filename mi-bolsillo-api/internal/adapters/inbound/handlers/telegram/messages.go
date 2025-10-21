@@ -11,6 +11,7 @@ type Messages struct {
 	Welcome            string `json:"welcome"`
 	ProcessingImage    string `json:"processing_image"`
 	BillSaved          string `json:"bill_saved"`
+	ExpenseSaved       string `json:"expense_saved"`
 	NoBills            string `json:"no_bills"`
 	NoBillsSummary     string `json:"no_bills_summary"`
 	NoBillsForPeriod   string `json:"no_bills_for_period"`
@@ -23,8 +24,10 @@ type Messages struct {
 	ErrorReadImage     string `json:"error_read_image"`
 	ErrorParseBill     string `json:"error_parse_bill"`
 	ErrorSaveBill      string `json:"error_save_bill"`
+	ErrorSaveExpense   string `json:"error_save_expense"`
 	ErrorRetrieveBills string `json:"error_retrieve_bills"`
 	ErrorProcessingMsg string `json:"error_processing_message"`
+	ErrorMissingAmount string `json:"error_missing_amount"`
 }
 
 // LoadMessages loads bot messages from a JSON file
