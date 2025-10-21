@@ -6,8 +6,8 @@ on:
       - master
 
 jobs:
-  build-and-push-api:
-    name: Build and Push API Image
+  build-and-push-echo:
+    name: Build and Push Echo Server Image
     runs-on: ubuntu-latest
 
     steps:
@@ -23,25 +23,62 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract metadata for API
-        id: meta-api
+      - name: Extract metadata for Echo Server
+        id: meta-echo
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-api
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-echo
           tags: |
             type=raw,value=latest
             type=sha,prefix={{branch}}-
 
-      - name: Build and push API image
+      - name: Build and push Echo Server image
         uses: docker/build-push-action@v5
         with:
           context: ./mi-bolsillo-api
-          file: ./mi-bolsillo-api/Dockerfile
+          file: ./mi-bolsillo-api/Dockerfile.echo
           push: true
-          tags: ${{ steps.meta-api.outputs.tags }}
-          labels: ${{ steps.meta-api.outputs.labels }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-api:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-api:buildcache,mode=max
+          tags: ${{ steps.meta-echo.outputs.tags }}
+          labels: ${{ steps.meta-echo.outputs.labels }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-echo:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-echo:buildcache,mode=max
+
+  build-and-push-telegram:
+    name: Build and Push Telegram Bot Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata for Telegram Bot
+        id: meta-telegram
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-telegram
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push Telegram Bot image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./mi-bolsillo-api
+          file: ./mi-bolsillo-api/Dockerfile.telegram
+          push: true
+          tags: ${{ steps.meta-telegram.outputs.tags }}
+          labels: ${{ steps.meta-telegram.outputs.labels }}
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-telegram:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-telegram:buildcache,mode=max
 
   build-and-push-front:
     name: Build and Push Frontend Image
