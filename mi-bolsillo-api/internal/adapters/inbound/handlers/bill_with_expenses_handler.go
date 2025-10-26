@@ -10,11 +10,15 @@ import (
 )
 
 type BillWithExpensesHandler struct {
-	service *services.BillWithExpensesService
+	service            *services.BillWithExpensesService
+	accountLinkService *services.AccountLinkService
 }
 
-func NewBillWithExpensesHandler(service *services.BillWithExpensesService) *BillWithExpensesHandler {
-	return &BillWithExpensesHandler{service: service}
+func NewBillWithExpensesHandler(service *services.BillWithExpensesService, accountLinkService *services.AccountLinkService) *BillWithExpensesHandler {
+	return &BillWithExpensesHandler{
+		service:            service,
+		accountLinkService: accountLinkService,
+	}
 }
 
 // CreateBillWithExpenses godoc
@@ -40,16 +44,25 @@ func (h *BillWithExpensesHandler) CreateBillWithExpenses(c echo.Context) error {
 		})
 	}
 
-	// Get user ID from context (set by Clerk auth middleware)
-	userID, ok := c.Get("userID").(string)
-	if !ok || userID == "" {
+	// Get Clerk ID from context (set by Clerk auth middleware)
+	clerkID, ok := c.Get("userID").(string)
+	if !ok || clerkID == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{
 			"error": "User ID not found in context",
 		})
 	}
 
-	// Set the user ID from the authenticated token
-	handlerDTO.UserID = userID
+	// Get or create user by Clerk ID
+	user, err := h.accountLinkService.GetOrCreateUserByClerkID(clerkID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "Failed to get user information",
+		})
+	}
+
+	// Set the user ID from the user entity
+	handlerDTO.UserID = user.UserID
+	handlerDTO.Source = "web"
 
 	// Map handler DTO to service DTO using mapper
 	serviceDTO := mappers.ToCreateBillWithExpensesServiceDTO(handlerDTO)
@@ -80,15 +93,23 @@ func (h *BillWithExpensesHandler) CreateBillWithExpenses(c echo.Context) error {
 // @Security BearerAuth
 // @Router /bills [get]
 func (h *BillWithExpensesHandler) ListBills(c echo.Context) error {
-	// Get user ID from context (set by Clerk auth middleware)
-	userID, ok := c.Get("userID").(string)
-	if !ok || userID == "" {
+	// Get Clerk ID from context (set by Clerk auth middleware)
+	clerkID, ok := c.Get("userID").(string)
+	if !ok || clerkID == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{
 			"error": "User ID not found in context",
 		})
 	}
 
-	billsWithExpenses, err := h.service.ListBillsByUserID(userID)
+	// Get or create user by Clerk ID
+	user, err := h.accountLinkService.GetOrCreateUserByClerkID(clerkID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "Failed to get user information",
+		})
+	}
+
+	billsWithExpenses, err := h.service.ListBillsByUserID(user.UserID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Failed to retrieve bills",
@@ -114,11 +135,19 @@ func (h *BillWithExpensesHandler) ListBills(c echo.Context) error {
 // @Security BearerAuth
 // @Router /bills/{id} [get]
 func (h *BillWithExpensesHandler) GetBillByID(c echo.Context) error {
-	// Get user ID from context (set by Clerk auth middleware)
-	userID, ok := c.Get("userID").(string)
-	if !ok || userID == "" {
+	// Get Clerk ID from context (set by Clerk auth middleware)
+	clerkID, ok := c.Get("userID").(string)
+	if !ok || clerkID == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{
 			"error": "User ID not found in context",
+		})
+	}
+
+	// Get or create user by Clerk ID
+	user, err := h.accountLinkService.GetOrCreateUserByClerkID(clerkID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "Failed to get user information",
 		})
 	}
 
@@ -130,7 +159,7 @@ func (h *BillWithExpensesHandler) GetBillByID(c echo.Context) error {
 		})
 	}
 
-	bill, expenses, err := h.service.GetBillWithExpenses(billID, userID)
+	bill, expenses, err := h.service.GetBillWithExpenses(billID, user.UserID)
 	if err != nil {
 		if err == services.ErrUnauthorized {
 			return c.JSON(http.StatusForbidden, map[string]string{
@@ -164,11 +193,19 @@ func (h *BillWithExpensesHandler) GetBillByID(c echo.Context) error {
 // @Security BearerAuth
 // @Router /bills/{id} [delete]
 func (h *BillWithExpensesHandler) DeleteBillByID(c echo.Context) error {
-	// Get user ID from context (set by Clerk auth middleware)
-	userID, ok := c.Get("userID").(string)
-	if !ok || userID == "" {
+	// Get Clerk ID from context (set by Clerk auth middleware)
+	clerkID, ok := c.Get("userID").(string)
+	if !ok || clerkID == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{
 			"error": "User ID not found in context",
+		})
+	}
+
+	// Get or create user by Clerk ID
+	user, err := h.accountLinkService.GetOrCreateUserByClerkID(clerkID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "Failed to get user information",
 		})
 	}
 
@@ -180,7 +217,7 @@ func (h *BillWithExpensesHandler) DeleteBillByID(c echo.Context) error {
 		})
 	}
 
-	err := h.service.DeleteBillWithExpenses(billID, userID)
+	err = h.service.DeleteBillWithExpenses(billID, user.UserID)
 	if err != nil {
 		if err == services.ErrUnauthorized {
 			return c.JSON(http.StatusForbidden, map[string]string{

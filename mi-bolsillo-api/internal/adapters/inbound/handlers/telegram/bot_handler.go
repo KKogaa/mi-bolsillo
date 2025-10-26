@@ -20,53 +20,66 @@ import (
 type BotHandler struct {
 	intentDetector          ports.IntentDetector
 	billWithExpensesService *services.BillWithExpensesService
+	accountLinkService      *services.AccountLinkService
 	grokClient              *grok.GrokClient
 	messages                *Messages
-	// Map Telegram user ID to application user ID
-	// In production, this should be stored in a database
-	userMapping map[int64]string
 }
 
 // NewBotHandler creates a new BotHandler instance
 func NewBotHandler(
 	intentDetector ports.IntentDetector,
 	billWithExpensesService *services.BillWithExpensesService,
+	accountLinkService *services.AccountLinkService,
 	grokClient *grok.GrokClient,
 	messages *Messages,
 ) *BotHandler {
 	return &BotHandler{
 		intentDetector:          intentDetector,
 		billWithExpensesService: billWithExpensesService,
+		accountLinkService:      accountLinkService,
 		grokClient:              grokClient,
 		messages:                messages,
-		userMapping:             make(map[int64]string),
 	}
 }
 
 func (h *BotHandler) HandleStart(c tele.Context) error {
-	userID := c.Sender().ID
-
-	// Get or create user mapping
-	if _, ok := h.userMapping[userID]; !ok {
-		// For demo purposes, use Telegram user ID as application user ID
-		h.userMapping[userID] = fmt.Sprintf("tg_%d", userID)
-	}
-
 	return c.Send(h.messages.Welcome, &tele.SendOptions{ParseMode: tele.ModeMarkdown})
 }
 
-func (h *BotHandler) HandleText(c tele.Context) error {
-	userID := c.Sender().ID
-	text := c.Text()
+func (h *BotHandler) HandleLink(c tele.Context) error {
+	telegramID := c.Sender().ID
 
-	// Ensure user is registered
-	appUserID, ok := h.userMapping[userID]
-	if !ok {
-		appUserID = fmt.Sprintf("tg_%d", userID)
-		h.userMapping[userID] = appUserID
+	// Get or create user by Telegram ID to ensure user exists before linking
+	_, err := h.accountLinkService.GetOrCreateUserByTelegramID(telegramID)
+	if err != nil {
+		log.Printf("Failed to get or create user for Telegram ID %d: %v", telegramID, err)
+		return c.Send(h.messages.LinkAccountError, &tele.SendOptions{ParseMode: tele.ModeMarkdown})
 	}
 
-	log.Printf("Received text from user %d: %s", userID, text)
+	// Generate OTP
+	otpCode, err := h.accountLinkService.GenerateOTP(telegramID)
+	if err != nil {
+		log.Printf("Failed to generate OTP for user %d: %v", telegramID, err)
+		return c.Send(h.messages.LinkAccountError, &tele.SendOptions{ParseMode: tele.ModeMarkdown})
+	}
+
+	// Send OTP to user
+	message := fmt.Sprintf(h.messages.LinkAccountOTP, otpCode)
+	return c.Send(message, &tele.SendOptions{ParseMode: tele.ModeMarkdown})
+}
+
+func (h *BotHandler) HandleText(c tele.Context) error {
+	telegramID := c.Sender().ID
+	text := c.Text()
+
+	// Get or create user by Telegram ID
+	user, err := h.accountLinkService.GetOrCreateUserByTelegramID(telegramID)
+	if err != nil {
+		log.Printf("Failed to get user for Telegram ID %d: %v", telegramID, err)
+		return c.Send(h.messages.ErrorProcessingMsg)
+	}
+
+	log.Printf("Received text from user %d: %s", telegramID, text)
 
 	// Detect intent
 	intent, err := h.intentDetector.DetectIntent(text)
@@ -79,11 +92,11 @@ func (h *BotHandler) HandleText(c tele.Context) error {
 
 	switch intent.Type {
 	case entities.IntentListBills:
-		return h.handleListBills(c, appUserID, intent)
+		return h.handleListBills(c, user.UserID, intent)
 	case entities.IntentSummaryBills:
-		return h.handleSummaryBills(c, appUserID, intent)
+		return h.handleSummaryBills(c, user.UserID, intent)
 	case entities.IntentCreateExpense:
-		return h.handleCreateExpense(c, appUserID, intent)
+		return h.handleCreateExpense(c, user.UserID, intent)
 	case entities.IntentUnknown:
 		fallthrough
 	default:
@@ -92,16 +105,16 @@ func (h *BotHandler) HandleText(c tele.Context) error {
 }
 
 func (h *BotHandler) HandlePhoto(c tele.Context) error {
-	userID := c.Sender().ID
+	telegramID := c.Sender().ID
 
-	// Ensure user is registered
-	appUserID, ok := h.userMapping[userID]
-	if !ok {
-		appUserID = fmt.Sprintf("tg_%d", userID)
-		h.userMapping[userID] = appUserID
+	// Get or create user by Telegram ID
+	user, err := h.accountLinkService.GetOrCreateUserByTelegramID(telegramID)
+	if err != nil {
+		log.Printf("Failed to get user for Telegram ID %d: %v", telegramID, err)
+		return c.Send(h.messages.ErrorProcessingMsg)
 	}
 
-	log.Printf("Received photo from user %d", userID)
+	log.Printf("Received photo from user %d", telegramID)
 
 	// Send processing message
 	if err := c.Send(h.messages.ProcessingImage); err != nil {
@@ -156,7 +169,8 @@ func (h *BotHandler) HandlePhoto(c tele.Context) error {
 	}
 
 	handlerDTO := handlerdtos.CreateBillWithExpensesRequest{
-		UserID:       appUserID,
+		UserID:       user.UserID,
+		Source:       "telegram",
 		Description:  parsedData.MerchantName,
 		Category:     "General",
 		Currency:     parsedData.Currency,
@@ -364,6 +378,7 @@ func (h *BotHandler) handleCreateExpense(c tele.Context, userID string, intent *
 	now := time.Now()
 	handlerDTO := handlerdtos.CreateBillWithExpensesRequest{
 		UserID:       userID,
+		Source:       "telegram",
 		Description:  description,
 		Category:     category,
 		Currency:     "PEN", // Default to PEN for Peru

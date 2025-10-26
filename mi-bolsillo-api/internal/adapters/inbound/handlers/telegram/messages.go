@@ -18,6 +18,8 @@ type Messages struct {
 	BillsListHeader    string `json:"bills_list_header"`
 	SummaryHeader      string `json:"summary_header"`
 	UnknownIntent      string `json:"unknown_intent"`
+	LinkAccountOTP     string `json:"link_account_otp"`
+	LinkAccountError   string `json:"link_account_error"`
 	ErrorUnderstand    string `json:"error_understand"`
 	ErrorRetrieveImage string `json:"error_retrieve_image"`
 	ErrorDownloadImage string `json:"error_download_image"`

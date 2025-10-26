@@ -11,6 +11,7 @@ type Bill struct {
 	Category    string    `json:"category" db:"category" example:"Food"`
 	Currency    string    `json:"currency" db:"currency" example:"USD"`
 	UserID      string    `json:"userId" db:"user_id" example:"user_123456789"`
+	Source      string    `json:"source" db:"source" example:"web"`
 	Date        time.Time `json:"date" db:"date" example:"2025-10-10T10:00:00Z"`
 	CreatedAt   time.Time `json:"createdAt" db:"created_at" example:"2025-10-10T10:00:00Z"`
 	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at" example:"2025-10-10T10:00:00Z"`

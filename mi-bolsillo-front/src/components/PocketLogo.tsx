@@ -1,0 +1,44 @@
+interface PocketLogoProps {
+  className?: string;
+  size?: number;
+}
+
+export const PocketLogo = ({ className = '', size = 32 }: PocketLogoProps) => {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {/* Pocket outline */}
+      <path
+        d="M20 10 C20 10, 15 10, 15 15 L15 50 C15 65, 25 80, 50 80 C75 80, 85 65, 85 50 L85 15 C85 10, 80 10, 80 10 Z"
+        fill="currentColor"
+        opacity="0.9"
+      />
+      {/* Pocket opening/fold */}
+      <path
+        d="M20 10 L80 10 L75 20 L25 20 Z"
+        fill="currentColor"
+        opacity="0.7"
+      />
+      {/* Inner pocket detail */}
+      <path
+        d="M30 30 L70 30 L70 50 C70 60, 60 70, 50 70 C40 70, 30 60, 30 50 Z"
+        fill="white"
+        opacity="0.15"
+      />
+      {/* Dollar sign */}
+      <g transform="translate(50, 50)">
+        <path
+          d="M-3 -15 L3 -15 L3 -10 C8 -9, 11 -6, 11 -2 C11 2, 8 5, 3 6 L3 11 L-3 11 L-3 6 C-8 5, -11 2, -11 -2 L-6 -2 C-6 0, -4 2, -3 2 L-3 -4 C-8 -5, -11 -8, -11 -12 C-11 -16, -8 -19, -3 -20 Z M-3 -10 L-3 -15 C-5 -15, -6 -14, -6 -12 C-6 -10, -5 -9, -3 -9 Z M3 0 L3 6 C5 6, 6 5, 6 2 C6 0, 5 -1, 3 -1 Z"
+          fill="white"
+          opacity="0.9"
+        />
+      </g>
+    </svg>
+  );
+};

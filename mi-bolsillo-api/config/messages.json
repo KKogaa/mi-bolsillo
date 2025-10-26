@@ -17,6 +17,8 @@
   "error_save_bill": "❌ Lo siento, no pude guardar tu factura. Por favor intenta de nuevo.",
   "error_save_expense": "❌ Lo siento, no pude guardar tu gasto. Por favor intenta de nuevo.",
   "error_retrieve_bills": "❌ Lo siento, no pude recuperar tus facturas. Por favor intenta de nuevo.",
-  "error_processing_message": "❌ Lo siento, no pude enviarte un mensaje de procesamiento. Por favor intenta de nuevo.",
-  "error_missing_amount": "❌ No pude detectar el monto del gasto. Por favor especifica cuánto gastaste (ej: \"gasté 100 soles en Wong\")."
+  "error_processing_message": "❌ Lo siento, no pude procesar tu solicitud. Por favor intenta de nuevo.",
+  "error_missing_amount": "❌ No pude detectar el monto del gasto. Por favor especifica cuánto gastaste (ej: \"gasté 100 soles en Wong\").",
+  "link_account_otp": "🔗 *Vincular Cuenta*\n\nPara vincular tu cuenta de Telegram con tu cuenta web, usa este código OTP:\n\n`%s`\n\nIngresa este código en la aplicación web para vincular tus cuentas.\n\n⏰ Este código expirará en 5 minutos.",
+  "link_account_error": "❌ Lo siento, no pude generar el código OTP. Por favor intenta de nuevo más tarde."
 }

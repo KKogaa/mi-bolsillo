@@ -1,0 +1,127 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "statistics": "Estadísticas"
+  },
+  "dashboard": {
+    "title": "Facturas",
+    "linkTelegram": "Vincular Telegram",
+    "openBot": "Abrir Bot",
+    "newBill": "Nueva Factura",
+    "loading": "Cargando...",
+    "noBills": "No hay facturas aún",
+    "createFirst": "Crea tu primera factura",
+    "errorLoad": "Error al cargar las facturas",
+    "errorDelete": "Error al eliminar la factura",
+    "delete": "Eliminar",
+    "expenses": "gasto",
+    "expenses_plural": "gastos"
+  },
+  "statistics": {
+    "title": "Estadísticas",
+    "showLast": "Mostrar últimos:",
+    "months": "meses",
+    "loading": "Cargando estadísticas...",
+    "noData": "No hay estadísticas disponibles",
+    "totalSpentPEN": "Total Gastado (PEN)",
+    "totalSpentUSD": "Total Gastado (USD)",
+    "averagePerBill": "Promedio por Factura",
+    "bills": "facturas",
+    "monthlySpending": "Gasto Mensual",
+    "weeklySpending": "Gasto Semanal",
+    "spendingByCategory": "Gasto por Categoría",
+    "noDataAvailable": "No hay datos disponibles",
+    "errorLoad": "Error al cargar las estadísticas"
+  },
+  "footer": {
+    "about": "Acerca de Mi Bolsillo",
+    "aboutText": "Gestiona tus facturas y gastos sin problemas en web y Telegram. Rastrea tus gastos con soporte multi-moneda.",
+    "quickLinks": "Enlaces Rápidos",
+    "home": "Inicio",
+    "statistics": "Estadísticas",
+    "createBill": "Crear Factura",
+    "linkTelegram": "Vincular Telegram",
+    "support": "Soporte",
+    "telegramBot": "Bot de Telegram",
+    "github": "GitHub",
+    "rights": "Todos los derechos reservados",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "whyLink": "¿Por qué vincular tu cuenta de Telegram?",
+    "benefits": {
+      "1": "Agregar facturas y gastos desde mensajes de Telegram",
+      "2": "Ver tus gastos en ambas plataformas",
+      "3": "Obtener resúmenes rápidos vía bot de Telegram",
+      "4": "Todos tus datos sincronizados en tiempo real"
+    }
+  },
+  "login": {
+    "title": "Inicia sesión en Mi Bolsillo",
+    "subtitle": "Gestiona tus facturas y gastos",
+    "noAccount": "¿No tienes una cuenta?",
+    "signUp": "Regístrate"
+  },
+  "signup": {
+    "title": "Crea tu cuenta",
+    "subtitle": "Comienza a gestionar tus gastos hoy",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "signIn": "Inicia sesión"
+  },
+  "linkTelegram": {
+    "title": "Vincular Cuenta de Telegram",
+    "subtitle": "Conecta tu cuenta de Telegram para gestionar tus gastos desde ambas plataformas",
+    "alreadyLinked": "Cuenta Ya Vinculada",
+    "linkedText": "Tu cuenta ya está vinculada a Telegram.",
+    "telegramId": "ID de Telegram:",
+    "youCanNow": "Ahora puedes:",
+    "benefits": {
+      "1": "Agregar facturas y gastos desde Telegram",
+      "2": "Ver tus gastos en ambas plataformas",
+      "3": "Obtener resúmenes rápidos vía el bot"
+    },
+    "howToLink": "Cómo vincular tu cuenta",
+    "linkAnother": "Vincular Otra Cuenta",
+    "step1": "Abre el bot de Mi Bolsillo en Telegram",
+    "step2": "Envía el comando",
+    "step2b": "para generar un código de verificación",
+    "step3": "Ingresa el código de 6 dígitos a continuación dentro de 5 minutos",
+    "success": "¡Éxito! Tu cuenta de Telegram ha sido vinculada.",
+    "successText": "Ahora puedes gestionar tus facturas desde web y Telegram.",
+    "verificationCode": "Código de Verificación",
+    "enterCode": "Ingresa código de 6 dígitos",
+    "codeExpires": "El código expira en 5 minutos",
+    "verifying": "Verificando...",
+    "accountLinked": "Cuenta Vinculada",
+    "verifyLink": "Verificar y Vincular Cuenta",
+    "whyLink": "¿Por qué vincular tu cuenta de Telegram?",
+    "errorLoad": "Error al verificar el código OTP. Por favor intenta de nuevo.",
+    "checkingStatus": "Verificando estado de vinculación..."
+  },
+  "createBill": {
+    "title": "Crear Nueva Factura",
+    "description": "Descripción",
+    "category": "Categoría",
+    "currency": "Moneda",
+    "exchangeRate": "Tipo de Cambio",
+    "date": "Fecha",
+    "expenses": "Gastos",
+    "addExpense": "Agregar Gasto",
+    "expenseDescription": "Descripción del Gasto",
+    "amount": "Monto",
+    "expenseDate": "Fecha del Gasto",
+    "remove": "Eliminar",
+    "creating": "Creando...",
+    "create": "Crear Factura",
+    "errorCreate": "Error al crear la factura"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Volver"
+  }
+}

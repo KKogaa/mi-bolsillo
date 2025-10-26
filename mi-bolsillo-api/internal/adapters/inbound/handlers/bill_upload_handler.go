@@ -15,12 +15,14 @@ import (
 type BillUploadHandler struct {
 	grokClient              *grok.GrokClient
 	billWithExpensesService *services.BillWithExpensesService
+	accountLinkService      *services.AccountLinkService
 }
 
-func NewBillUploadHandler(grokClient *grok.GrokClient, billWithExpensesService *services.BillWithExpensesService) *BillUploadHandler {
+func NewBillUploadHandler(grokClient *grok.GrokClient, billWithExpensesService *services.BillWithExpensesService, accountLinkService *services.AccountLinkService) *BillUploadHandler {
 	return &BillUploadHandler{
 		grokClient:              grokClient,
 		billWithExpensesService: billWithExpensesService,
+		accountLinkService:      accountLinkService,
 	}
 }
 
@@ -39,11 +41,19 @@ func NewBillUploadHandler(grokClient *grok.GrokClient, billWithExpensesService *
 // @Security BearerAuth
 // @Router /bills/upload [post]
 func (h *BillUploadHandler) UploadBillPhoto(c echo.Context) error {
-	// Get user ID from context (set by Clerk auth middleware)
-	userID, ok := c.Get("userID").(string)
-	if !ok || userID == "" {
+	// Get Clerk ID from context (set by Clerk auth middleware)
+	clerkID, ok := c.Get("userID").(string)
+	if !ok || clerkID == "" {
 		return c.JSON(http.StatusUnauthorized, map[string]string{
 			"error": "User ID not found in context",
+		})
+	}
+
+	// Get or create user by Clerk ID
+	user, err := h.accountLinkService.GetOrCreateUserByClerkID(clerkID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "Failed to get user information",
 		})
 	}
 
@@ -88,7 +98,8 @@ func (h *BillUploadHandler) UploadBillPhoto(c echo.Context) error {
 
 	// Convert parsed data to CreateBillWithExpensesRequest
 	handlerDTO := handlerdtos.CreateBillWithExpensesRequest{
-		UserID:      userID,
+		UserID:      user.UserID,
+		Source:      "web",
 		Description: parsedData.MerchantName,
 		Category:    "General", // Default category for the bill
 		Currency:    parsedData.Currency,

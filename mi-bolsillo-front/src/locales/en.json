@@ -1,0 +1,127 @@
+{
+  "nav": {
+    "home": "Home",
+    "statistics": "Statistics"
+  },
+  "dashboard": {
+    "title": "Bills",
+    "linkTelegram": "Link Telegram",
+    "openBot": "Open Bot",
+    "newBill": "New Bill",
+    "loading": "Loading...",
+    "noBills": "No bills yet",
+    "createFirst": "Create your first bill",
+    "errorLoad": "Failed to load bills",
+    "errorDelete": "Failed to delete bill",
+    "delete": "Delete",
+    "expenses": "expense",
+    "expenses_plural": "expenses"
+  },
+  "statistics": {
+    "title": "Statistics",
+    "showLast": "Show last:",
+    "months": "months",
+    "loading": "Loading statistics...",
+    "noData": "No statistics available",
+    "totalSpentPEN": "Total Spent (PEN)",
+    "totalSpentUSD": "Total Spent (USD)",
+    "averagePerBill": "Average per Bill",
+    "bills": "bills",
+    "monthlySpending": "Monthly Spending",
+    "weeklySpending": "Weekly Spending",
+    "spendingByCategory": "Spending by Category",
+    "noDataAvailable": "No data available",
+    "errorLoad": "Failed to load statistics"
+  },
+  "footer": {
+    "about": "About Mi Bolsillo",
+    "aboutText": "Manage your bills and expenses seamlessly across web and Telegram. Track your spending with multi-currency support.",
+    "quickLinks": "Quick Links",
+    "home": "Home",
+    "statistics": "Statistics",
+    "createBill": "Create Bill",
+    "linkTelegram": "Link Telegram",
+    "support": "Support",
+    "telegramBot": "Telegram Bot",
+    "github": "GitHub",
+    "rights": "All rights reserved",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "whyLink": "Why link your Telegram account?",
+    "benefits": {
+      "1": "Add bills and expenses from Telegram messages",
+      "2": "View your spending on both platforms",
+      "3": "Get quick summaries via Telegram bot",
+      "4": "All your data synced in real-time"
+    }
+  },
+  "login": {
+    "title": "Sign in to Mi Bolsillo",
+    "subtitle": "Manage your bills and expenses",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up"
+  },
+  "signup": {
+    "title": "Create your account",
+    "subtitle": "Start managing your expenses today",
+    "haveAccount": "Already have an account?",
+    "signIn": "Sign in"
+  },
+  "linkTelegram": {
+    "title": "Link Telegram Account",
+    "subtitle": "Connect your Telegram account to manage your expenses from both platforms",
+    "alreadyLinked": "Account Already Linked",
+    "linkedText": "Your account is already linked to Telegram.",
+    "telegramId": "Telegram ID:",
+    "youCanNow": "You can now:",
+    "benefits": {
+      "1": "Add bills and expenses from Telegram",
+      "2": "View your spending on both platforms",
+      "3": "Get quick summaries via the bot"
+    },
+    "howToLink": "How to link your account",
+    "linkAnother": "Link Another Account",
+    "step1": "Open the Mi Bolsillo Telegram bot",
+    "step2": "Send the command",
+    "step2b": "to generate a verification code",
+    "step3": "Enter the 6-digit code below within 5 minutes",
+    "success": "Success! Your Telegram account has been linked.",
+    "successText": "You can now manage your bills from both web and Telegram.",
+    "verificationCode": "Verification Code",
+    "enterCode": "Enter 6-digit code",
+    "codeExpires": "The code expires in 5 minutes",
+    "verifying": "Verifying...",
+    "accountLinked": "Account Linked",
+    "verifyLink": "Verify & Link Account",
+    "whyLink": "Why link your Telegram account?",
+    "errorLoad": "Failed to verify OTP code. Please try again.",
+    "checkingStatus": "Checking link status..."
+  },
+  "createBill": {
+    "title": "Create New Bill",
+    "description": "Description",
+    "category": "Category",
+    "currency": "Currency",
+    "exchangeRate": "Exchange Rate",
+    "date": "Date",
+    "expenses": "Expenses",
+    "addExpense": "Add Expense",
+    "expenseDescription": "Expense Description",
+    "amount": "Amount",
+    "expenseDate": "Expense Date",
+    "remove": "Remove",
+    "creating": "Creating...",
+    "create": "Create Bill",
+    "errorCreate": "Failed to create bill"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back"
+  }
+}

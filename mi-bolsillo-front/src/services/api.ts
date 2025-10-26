@@ -7,7 +7,6 @@ const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true',
   },
 });
 
@@ -56,6 +55,59 @@ export const billService = {
 
   delete: async (id: string): Promise<void> => {
     await api.delete(`/bills/${id}`);
+  },
+};
+
+export const authService = {
+  verifyOTP: async (otpCode: string): Promise<{ success: boolean; message: string }> => {
+    const { data } = await api.post('/auth/verify-otp', { otpCode });
+    return data;
+  },
+  getLinkStatus: async (): Promise<{ isLinked: boolean; telegramId?: number }> => {
+    const { data } = await api.get('/auth/link-status');
+    return data;
+  },
+};
+
+export interface MonthlyStatistics {
+  month: string;
+  totalPen: number;
+  totalUsd: number;
+  billCount: number;
+  year: number;
+  monthNum: number;
+}
+
+export interface WeeklyStatistics {
+  weekStart: string;
+  weekEnd: string;
+  weekLabel: string;
+  totalPen: number;
+  totalUsd: number;
+  billCount: number;
+}
+
+export interface CategoryStatistics {
+  category: string;
+  totalPen: number;
+  totalUsd: number;
+  billCount: number;
+  percentage: number;
+}
+
+export interface DashboardStatistics {
+  monthlyStats: MonthlyStatistics[];
+  weeklyStats: WeeklyStatistics[];
+  categoryStats: CategoryStatistics[];
+  totalPen: number;
+  totalUsd: number;
+  totalBills: number;
+}
+
+export const statisticsService = {
+  getDashboardStatistics: async (months: number = 6): Promise<DashboardStatistics> => {
+    const { data } = await api.get(`/statistics/dashboard?months=${months}`);
+    return data;
   },
 };
 

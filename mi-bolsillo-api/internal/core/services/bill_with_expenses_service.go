@@ -61,6 +61,7 @@ func (s *BillWithExpensesService) CreateBillWithExpenses(dto dtos.CreateBillWith
 			Date:         expenseDTO.Date,
 			BillID:       billID,
 			UserID:       dto.UserID,
+			Source:       dto.Source,
 			CreatedAt:    now.Format(time.RFC3339),
 			UpdatedAt:    now.Format(time.RFC3339),
 		}
@@ -76,6 +77,7 @@ func (s *BillWithExpensesService) CreateBillWithExpenses(dto dtos.CreateBillWith
 		Category:    dto.Category,
 		Currency:    dto.Currency,
 		UserID:      dto.UserID,
+		Source:      dto.Source,
 		Date:        dto.Date,
 		CreatedAt:   now,
 		UpdatedAt:   now,

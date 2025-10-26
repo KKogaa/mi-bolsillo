@@ -20,6 +20,7 @@ func ToCreateBillWithExpensesServiceDTO(handlerDTO handlerdtos.CreateBillWithExp
 		Description:  handlerDTO.Description,
 		Category:     handlerDTO.Category,
 		UserID:       handlerDTO.UserID,
+		Source:       handlerDTO.Source,
 		Date:         handlerDTO.Date,
 		Currency:     handlerDTO.Currency,
 		ExchangeRate: handlerDTO.ExchangeRate,

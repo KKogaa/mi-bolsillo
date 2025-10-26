@@ -6,6 +6,8 @@ import { SignUp } from './pages/SignUp';
 import { Dashboard } from './pages/Dashboard';
 import { CreateBill } from './pages/CreateBill';
 import { BillDetail } from './pages/BillDetail';
+import { LinkTelegramAccount } from './pages/LinkTelegramAccount';
+import { Statistics } from './pages/Statistics';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isSignedIn, isLoaded } = useAuth();
@@ -54,6 +56,22 @@ function App() {
           element={
             <ProtectedRoute>
               <BillDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/link-telegram"
+          element={
+            <ProtectedRoute>
+              <LinkTelegramAccount />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/statistics"
+          element={
+            <ProtectedRoute>
+              <Statistics />
             </ProtectedRoute>
           }
         />

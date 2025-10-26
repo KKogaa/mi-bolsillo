@@ -12,6 +12,8 @@ type CreateBillWithExpensesRequest struct {
 	Expenses     []CreateExpenseForBill `json:"expenses"`
 	// UserID is set from JWT token in the handler, not from request body
 	UserID string `json:"-" swaggerignore:"true"`
+	// Source is set by the handler (web or telegram), not from request body
+	Source string `json:"-" swaggerignore:"true"`
 }
 
 // CreateExpenseForBill represents an expense item within a bill

@@ -15,8 +15,8 @@ func NewExpenseRepository(db *sqlx.DB) *ExpenseRepositoryImpl {
 
 func (r *ExpenseRepositoryImpl) Create(expense *entities.Expense) error {
 	query := `
-		INSERT INTO expenses (expense_id, amount_pen, amount_usd, exchange_rate, currency, description, category, date, bill_id, user_id, created_at, updated_at)
-		VALUES (:expense_id, :amount_pen, :amount_usd, :exchange_rate, :currency, :description, :category, :date, :bill_id, :user_id, :created_at, :updated_at)
+		INSERT INTO expenses (expense_id, amount_pen, amount_usd, exchange_rate, currency, description, category, date, bill_id, user_id, source, created_at, updated_at)
+		VALUES (:expense_id, :amount_pen, :amount_usd, :exchange_rate, :currency, :description, :category, :date, :bill_id, :user_id, :source, :created_at, :updated_at)
 	`
 	_, err := r.db.NamedExec(query, expense)
 	return err
@@ -24,8 +24,8 @@ func (r *ExpenseRepositoryImpl) Create(expense *entities.Expense) error {
 
 func (r *ExpenseRepositoryImpl) CreateBatch(expenses []*entities.Expense) error {
 	query := `
-		INSERT INTO expenses (expense_id, amount_pen, amount_usd, exchange_rate, currency, description, category, date, bill_id, user_id, created_at, updated_at)
-		VALUES (:expense_id, :amount_pen, :amount_usd, :exchange_rate, :currency, :description, :category, :date, :bill_id, :user_id, :created_at, :updated_at)
+		INSERT INTO expenses (expense_id, amount_pen, amount_usd, exchange_rate, currency, description, category, date, bill_id, user_id, source, created_at, updated_at)
+		VALUES (:expense_id, :amount_pen, :amount_usd, :exchange_rate, :currency, :description, :category, :date, :bill_id, :user_id, :source, :created_at, :updated_at)
 	`
 
 	tx, err := r.db.Beginx()
@@ -56,5 +56,11 @@ func (r *ExpenseRepositoryImpl) FindByBillID(billID string) ([]*entities.Expense
 func (r *ExpenseRepositoryImpl) DeleteByBillID(billID string) error {
 	query := `DELETE FROM expenses WHERE bill_id = ?`
 	_, err := r.db.Exec(query, billID)
+	return err
+}
+
+func (r *ExpenseRepositoryImpl) UpdateUserID(oldUserID string, newUserID string) error {
+	query := `UPDATE expenses SET user_id = ? WHERE user_id = ?`
+	_, err := r.db.Exec(query, newUserID, oldUserID)
 	return err
 }

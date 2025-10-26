@@ -7,4 +7,5 @@ type ExpenseRepository interface {
 	CreateBatch(expenses []*entities.Expense) error
 	FindByBillID(billID string) ([]*entities.Expense, error)
 	DeleteByBillID(billID string) error
+	UpdateUserID(oldUserID string, newUserID string) error
 }

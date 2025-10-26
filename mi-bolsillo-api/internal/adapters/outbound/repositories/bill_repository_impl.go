@@ -15,8 +15,8 @@ func NewBillRepository(db *sqlx.DB) *BillRepositoryImpl {
 
 func (r *BillRepositoryImpl) Create(bill *entities.Bill) error {
 	query := `
-		INSERT INTO bills (bill_id, amount_pen, amount_usd, description, category, currency, user_id, date, created_at, updated_at)
-		VALUES (:bill_id, :amount_pen, :amount_usd, :description, :category, :currency, :user_id, :date, :created_at, :updated_at)
+		INSERT INTO bills (bill_id, amount_pen, amount_usd, description, category, currency, user_id, source, date, created_at, updated_at)
+		VALUES (:bill_id, :amount_pen, :amount_usd, :description, :category, :currency, :user_id, :source, :date, :created_at, :updated_at)
 	`
 	_, err := r.db.NamedExec(query, bill)
 	return err
@@ -45,5 +45,11 @@ func (r *BillRepositoryImpl) FindByUserID(userID string) ([]*entities.Bill, erro
 func (r *BillRepositoryImpl) Delete(billID string) error {
 	query := `DELETE FROM bills WHERE bill_id = ?`
 	_, err := r.db.Exec(query, billID)
+	return err
+}
+
+func (r *BillRepositoryImpl) UpdateUserID(oldUserID string, newUserID string) error {
+	query := `UPDATE bills SET user_id = ? WHERE user_id = ?`
+	_, err := r.db.Exec(query, newUserID, oldUserID)
 	return err
 }

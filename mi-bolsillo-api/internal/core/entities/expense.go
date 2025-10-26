@@ -12,6 +12,7 @@ type Expense struct {
 	Date         string  `json:"date" db:"date" example:"2025-10-10"`
 	BillID       string  `json:"billId" db:"bill_id" example:"123e4567-e89b-12d3-a456-426614174000"`
 	UserID       string  `json:"userId" db:"user_id" example:"user_123456789"`
+	Source       string  `json:"source" db:"source" example:"web"`
 	CreatedAt    string  `json:"createdAt" db:"created_at" example:"2025-10-10T10:00:00Z"`
 	UpdatedAt    string  `json:"updatedAt" db:"updated_at" example:"2025-10-10T10:00:00Z"`
 }

@@ -7,4 +7,5 @@ type BillRepository interface {
 	FindByID(billID string) (*entities.Bill, error)
 	FindByUserID(userID string) ([]*entities.Bill, error)
 	Delete(billID string) error
+	UpdateUserID(oldUserID string, newUserID string) error
 }

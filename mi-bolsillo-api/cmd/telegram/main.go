@@ -49,9 +49,12 @@ func main() {
 	// Initialize repositories
 	billRepo := repositories.NewBillRepository(db)
 	expenseRepo := repositories.NewExpenseRepository(db)
+	userRepo := repositories.NewUserRepository(db)
+	otpRepo := repositories.NewOTPRepository(db)
 
 	// Initialize services
 	billWithExpensesService := services.NewBillWithExpensesService(billRepo, expenseRepo)
+	accountLinkService := services.NewAccountLinkService(userRepo, otpRepo, billRepo, expenseRepo, cfg.OTPExpirationMinutes)
 
 	// Initialize Grok client (implements IntentDetector interface)
 	grokClient := grok.NewGrokClient(cfg.GrokAPIKey)
@@ -60,6 +63,7 @@ func main() {
 	botHandler := telegram.NewBotHandler(
 		grokClient, // GrokClient implements ports.IntentDetector
 		billWithExpensesService,
+		accountLinkService,
 		grokClient,
 		messages,
 	)
@@ -77,6 +81,7 @@ func main() {
 
 	// Register handlers
 	bot.Handle("/start", botHandler.HandleStart)
+	bot.Handle("/link", botHandler.HandleLink)
 	bot.Handle(tele.OnText, botHandler.HandleText)
 	bot.Handle(tele.OnPhoto, botHandler.HandlePhoto)
 
