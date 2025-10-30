@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { MainLayout } from '../layouts/MainLayout';
 import { billService, authService } from '../services/api';
 import type { Bill } from '../types';
+import { config } from '../config';
 
 export const Dashboard = () => {
   const { t } = useTranslation();
@@ -68,7 +69,7 @@ export const Dashboard = () => {
             )}
             {isLinked && (
               <a
-                href={`https://t.me/${import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'mi_bolsillo_bot'}`}
+                href={`https://t.me/${config.telegramBotUsername}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2 bg-white text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-2"

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { config } from '../config';
 
 export const Footer = () => {
   const { t } = useTranslation();
@@ -67,7 +68,7 @@ export const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <a
-                  href={`https://t.me/${import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'mi_bolsillo_bot'}`}
+                  href={`https://t.me/${config.telegramBotUsername}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-1"

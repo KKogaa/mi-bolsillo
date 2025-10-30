@@ -1,7 +1,8 @@
 import axios from 'axios';
 import type { Bill, CreateBillRequest } from '../types';
+import { config } from '../config';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const API_BASE_URL = config.apiUrl;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
