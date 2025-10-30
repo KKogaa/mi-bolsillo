@@ -12,6 +12,16 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Accept build-time environment variables
+ARG VITE_CLERK_PUBLISHABLE_KEY
+ARG VITE_API_URL
+ARG VITE_TELEGRAM_BOT_USERNAME
+
+# Set environment variables for build
+ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_TELEGRAM_BOT_USERNAME=$VITE_TELEGRAM_BOT_USERNAME
+
 # Build the application
 RUN npm run build
 
@@ -21,18 +31,39 @@ FROM nginx:alpine
 # Copy built assets from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration for SPA routing
+# Create nginx configuration that supports PORT environment variable
 RUN echo 'server { \
-    listen 80; \
-    server_name localhost; \
+    listen ${PORT}; \
+    server_name _; \
     root /usr/share/nginx/html; \
     index index.html; \
     location / { \
         try_files $uri $uri/ /index.html; \
     } \
-}' > /etc/nginx/conf.d/default.conf
+    # Security headers \
+    add_header X-Frame-Options "SAMEORIGIN" always; \
+    add_header X-Content-Type-Options "nosniff" always; \
+    add_header X-XSS-Protection "1; mode=block" always; \
+}' > /etc/nginx/conf.d/default.conf.template
 
-# Expose port 80
-EXPOSE 80
+# Copy entrypoint script
+COPY <<'EOF' /docker-entrypoint.sh
+#!/bin/sh
+set -e
 
-CMD ["nginx", "-g", "daemon off;"]
+# Use PORT environment variable or default to 80
+PORT=${PORT:-80}
+
+# Replace PORT placeholder in nginx config
+envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+
+# Start nginx
+exec nginx -g 'daemon off;'
+EOF
+
+RUN chmod +x /docker-entrypoint.sh
+
+# Expose PORT (will be set by Render)
+EXPOSE ${PORT}
+
+CMD ["/docker-entrypoint.sh"]
