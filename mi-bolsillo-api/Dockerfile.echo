@@ -9,8 +9,11 @@ COPY go.mod go.sum ./
 # Download dependencies
 RUN go mod download
 
-# Copy source code
+# Copy source code (excluding .env files)
 COPY . .
+
+# Remove any .env files that might have been copied
+RUN rm -f .env .env.* || true
 
 # Build the Echo server application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o echo-server ./cmd/main.go
@@ -25,11 +28,14 @@ WORKDIR /root/
 # Copy the binary from builder
 COPY --from=builder /app/echo-server .
 
-# Copy config files if needed
+# Copy config files (messages.json, etc.) if needed
 COPY --from=builder /app/config ./config
 
 # Expose port 8080
 EXPOSE 8080
+
+# Environment variables will be injected at runtime by Render
+# No need to copy .env files - all config comes from environment
 
 # Run the Echo server binary
 CMD ["./echo-server"]

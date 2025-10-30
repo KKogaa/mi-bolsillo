@@ -9,8 +9,11 @@ COPY go.mod go.sum ./
 # Download dependencies
 RUN go mod download
 
-# Copy source code
+# Copy source code (excluding .env files)
 COPY . .
+
+# Remove any .env files that might have been copied
+RUN rm -f .env .env.* || true
 
 # Build the Telegram bot application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o telegram-bot ./cmd/telegram/main.go
@@ -29,6 +32,9 @@ COPY --from=builder /app/telegram-bot .
 COPY --from=builder /app/config ./config
 
 # No port exposure needed for Telegram bot (uses long polling)
+
+# Environment variables will be injected at runtime by Render
+# No need to copy .env files - all config comes from environment
 
 # Run the Telegram bot binary
 CMD ["./telegram-bot"]

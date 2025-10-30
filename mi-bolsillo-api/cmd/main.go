@@ -274,7 +274,15 @@ func main() {
 	api.GET("/auth/link-status", authHandler.GetLinkStatus)
 	api.GET("/statistics/dashboard", statisticsHandler.GetDashboardStatistics)
 
-	if err := e.Start(":8080"); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	// Use PORT from config (Render will set this automatically)
+	port := cfg.Port
+	if port == "" {
+		port = "8080" // Default fallback
+	}
+	serverAddr := fmt.Sprintf(":%s", port)
+
+	log.Printf("Starting server on %s", serverAddr)
+	if err := e.Start(serverAddr); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal("failed to start server", "error", err)
 	}
 

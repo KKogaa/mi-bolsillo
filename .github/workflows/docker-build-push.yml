@@ -43,6 +43,8 @@ jobs:
           labels: ${{ steps.meta-echo.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-echo:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-echo:buildcache,mode=max
+          # Note: Environment variables are injected at runtime by Render, not at build time
+          # The application reads config from environment variables via os.Getenv()
 
   build-and-push-telegram:
     name: Build and Push Telegram Bot Image
@@ -81,6 +83,8 @@ jobs:
           labels: ${{ steps.meta-telegram.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-telegram:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-telegram:buildcache,mode=max
+          # Note: Environment variables are injected at runtime by Render, not at build time
+          # The application reads config from environment variables via os.Getenv()
 
   build-and-push-front:
     name: Build and Push Frontend Image
@@ -119,3 +123,5 @@ jobs:
           labels: ${{ steps.meta-front.outputs.labels }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-front:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/mi-bolsillo-front:buildcache,mode=max
+          # Note: Environment variables are injected at runtime by Render, not at build time
+          # For frontend apps, ensure VITE_* or REACT_APP_* vars are set in Render dashboard
