@@ -34,12 +34,12 @@ export const CategoryChart = ({ data }: CategoryChartProps) => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ percentage }) => `${percentage.toFixed(1)}%`}
+                label={(entry: any) => `${(entry.percent * 100).toFixed(1)}%`}
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
               >
-                {chartData.map((entry, index) => (
+                {chartData.map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

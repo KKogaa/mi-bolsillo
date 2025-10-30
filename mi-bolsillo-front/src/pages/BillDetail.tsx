@@ -95,7 +95,7 @@ export const BillDetail = () => {
           </div>
           <ul className="divide-y divide-gray-200">
             {bill.expenses?.map((expense, index) => (
-              <li key={expense.id || index} className="px-6 py-4">
+              <li key={expense.expenseId || index} className="px-6 py-4">
                 <div className="flex justify-between items-start">
                   <div>
                     <p className="font-medium text-gray-900">{expense.description}</p>
@@ -109,7 +109,7 @@ export const BillDetail = () => {
                     </p>
                   </div>
                   <span className="font-semibold text-gray-900">
-                    {bill.currency === 'PEN' ? 'S/' : '$'}{expense.amount.toFixed(2)}
+                    {bill.currency === 'PEN' ? 'S/' : '$'}{(bill.currency === 'PEN' ? expense.amountPen : expense.amountUsd).toFixed(2)}
                   </span>
                 </div>
               </li>
@@ -119,7 +119,7 @@ export const BillDetail = () => {
             <div className="flex justify-between items-center">
               <span className="text-lg font-medium text-gray-900">Total</span>
               <span className="text-2xl font-bold text-gray-900">
-                {bill.currency === 'PEN' ? 'S/' : '$'}{bill.expenses?.reduce((sum, exp) => sum + exp.amount, 0).toFixed(2) || '0.00'}
+                {bill.currency === 'PEN' ? 'S/' : '$'}{bill.expenses?.reduce((sum, exp) => sum + (bill.currency === 'PEN' ? exp.amountPen : exp.amountUsd), 0).toFixed(2) || '0.00'}
               </span>
             </div>
           </div>
