@@ -51,28 +51,43 @@ COPY <<'EOF' /docker-entrypoint.sh
 #!/bin/sh
 set -e
 
+echo "=== Starting container initialization ==="
+echo "PORT: ${PORT:-80}"
+echo "VITE_CLERK_PUBLISHABLE_KEY is set: $([ -n "$VITE_CLERK_PUBLISHABLE_KEY" ] && echo 'YES' || echo 'NO')"
+echo "VITE_API_URL is set: $([ -n "$VITE_API_URL" ] && echo 'YES' || echo 'NO')"
+echo "VITE_TELEGRAM_BOT_USERNAME is set: $([ -n "$VITE_TELEGRAM_BOT_USERNAME" ] && echo 'YES' || echo 'NO')"
+
 # Use PORT environment variable or default to 80
 PORT=${PORT:-80}
 
 # Replace PORT placeholder in nginx config
 envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 
-# Inject runtime environment variables into the built JavaScript
-if [ -n "$VITE_CLERK_PUBLISHABLE_KEY" ] || [ -n "$VITE_API_URL" ] || [ -n "$VITE_TELEGRAM_BOT_USERNAME" ]; then
-    echo "Injecting runtime environment variables..."
+# Always inject runtime environment variables (even if empty, app will fall back to build-time values)
+echo "=== Injecting runtime environment variables ==="
 
-    # Create runtime config that will be loaded before the app
-    cat > /usr/share/nginx/html/runtime-config.js <<RUNTIME_EOF
+# Create runtime config that will be loaded before the app
+cat > /usr/share/nginx/html/runtime-config.js <<RUNTIME_EOF
 window.RUNTIME_CONFIG = {
-    VITE_CLERK_PUBLISHABLE_KEY: "${VITE_CLERK_PUBLISHABLE_KEY}",
-    VITE_API_URL: "${VITE_API_URL}",
-    VITE_TELEGRAM_BOT_USERNAME: "${VITE_TELEGRAM_BOT_USERNAME}"
+    VITE_CLERK_PUBLISHABLE_KEY: "${VITE_CLERK_PUBLISHABLE_KEY:-}",
+    VITE_API_URL: "${VITE_API_URL:-}",
+    VITE_TELEGRAM_BOT_USERNAME: "${VITE_TELEGRAM_BOT_USERNAME:-}"
 };
+console.log('Runtime config loaded:', window.RUNTIME_CONFIG);
 RUNTIME_EOF
 
-    # Inject script tag into index.html before other scripts
+echo "Runtime config created successfully"
+cat /usr/share/nginx/html/runtime-config.js
+
+# Inject script tag into index.html before other scripts (only once)
+if ! grep -q "runtime-config.js" /usr/share/nginx/html/index.html; then
+    echo "Injecting runtime-config.js into index.html"
     sed -i 's|<head>|<head>\n    <script src="/runtime-config.js"></script>|' /usr/share/nginx/html/index.html
+else
+    echo "runtime-config.js already in index.html"
 fi
+
+echo "=== Initialization complete, starting nginx ==="
 
 # Start nginx
 exec nginx -g 'daemon off;'
