@@ -35,9 +35,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                <PocketLogo className="text-blue-600" size={36} />
-                <h1 className="text-xl font-bold text-gray-900">Mi Bolsillo</h1>
+              <Link to="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity">
+                <PocketLogo className="text-blue-600" size={32} />
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900">Mi Bolsillo</h1>
               </Link>
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center ml-10 space-x-8">
@@ -130,7 +130,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           )}
         </div>
       </nav>
-      <main className="flex-grow max-w-7xl w-full mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="flex-grow max-w-7xl w-full mx-auto py-4 sm:py-6 sm:px-6 lg:px-8">
         {children}
       </main>
       <Footer />
