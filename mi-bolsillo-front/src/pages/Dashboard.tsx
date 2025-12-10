@@ -171,7 +171,7 @@ export const Dashboard = () => {
 
                     {expandedBillId === bill.billId && bill.expenses && bill.expenses.length > 0 && (
                       <div className="px-4 py-3 sm:px-6 bg-gray-50 border-t border-gray-200">
-                        <h4 className="text-sm font-medium text-gray-700 mb-3">Expenses</h4>
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">{t('dashboard.expensesTitle')}</h4>
                         <ul className="space-y-2">
                           {bill.expenses.map((expense) => (
                             <li

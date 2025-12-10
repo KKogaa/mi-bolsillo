@@ -15,7 +15,8 @@
     "errorDelete": "Failed to delete bill",
     "delete": "Delete",
     "expenses": "expense",
-    "expenses_plural": "expenses"
+    "expenses_plural": "expenses",
+    "expensesTitle": "Expenses"
   },
   "statistics": {
     "title": "Statistics",

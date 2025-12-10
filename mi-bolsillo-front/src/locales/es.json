@@ -15,7 +15,8 @@
     "errorDelete": "Error al eliminar la factura",
     "delete": "Eliminar",
     "expenses": "gasto",
-    "expenses_plural": "gastos"
+    "expenses_plural": "gastos",
+    "expensesTitle": "Gastos"
   },
   "statistics": {
     "title": "Estadísticas",
