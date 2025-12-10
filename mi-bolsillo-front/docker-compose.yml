@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # Frontend application
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:8080}
+        - VITE_TELEGRAM_BOT_USERNAME=${VITE_TELEGRAM_BOT_USERNAME}
+    container_name: mi-bolsillo-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - PORT=80
+      - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8080}
+      - VITE_TELEGRAM_BOT_USERNAME=${VITE_TELEGRAM_BOT_USERNAME}
+    restart: unless-stopped
+    networks:
+      - mi-bolsillo-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  mi-bolsillo-network:
+    driver: bridge
